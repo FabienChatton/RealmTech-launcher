@@ -7,5 +7,4 @@ module ch.realmtech.launcher {
     exports ch.realmtech.launcher.ctrl;
     exports ch.realmtech.launcher.wrk;
     opens ch.realmtech.launcher.ctrl to javafx.fxml;
-    exports ch.realmtech.launcher.wrk.process;
 }
