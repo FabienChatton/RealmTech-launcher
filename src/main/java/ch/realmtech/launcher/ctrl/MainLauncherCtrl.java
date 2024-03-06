@@ -1,7 +1,7 @@
 package ch.realmtech.launcher.ctrl;
 
-import ch.realmtech.launcher.wrk.VersionApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
+import ch.realmtech.launcher.wrk.VersionApplicationProcess;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
@@ -21,21 +21,23 @@ public class MainLauncherCtrl {
         this.realmTechData = realmTechData;
     }
 
-    public void setApplicationProcess(VersionApplicationProcess versionApplicationProcess) {
-        this.versionApplicationProcess = versionApplicationProcess;
-    }
-
     @FXML
     public void onLaunched(MouseEvent mouseEvent) {
         Optional<File> selectedVersionFile = getSelectedVersionFile();
         if (selectedVersionFile.isPresent()) {
             try {
-                versionApplicationProcess.launchVersionFile(selectedVersionFile.get());
+                versionApplicationProcess = VersionApplicationProcess.launchVersionFile(selectedVersionFile.get());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         } else {
             System.out.println("Aucun version n'est sélectionnée");
+        }
+    }
+
+    public void close() throws Exception {
+        if (versionApplicationProcess != null) {
+            versionApplicationProcess.close();
         }
     }
 

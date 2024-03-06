@@ -1,27 +1,53 @@
 package ch.realmtech.launcher.wrk;
 
-import ch.realmtech.launcher.wrk.RealmTechData;
-
+import java.io.Closeable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-public class VersionApplicationProcess {
+public class VersionApplicationProcess implements Closeable {
 
-    private final List<Process> processes;
+    private final Process process;
+    private final Thread applicationProcessThread;
+    private volatile boolean applicationProcessRun;
 
-    public VersionApplicationProcess() {
-        this.processes = new ArrayList<>();
+    public VersionApplicationProcess(Process process) {
+        this.process = process;
+        applicationProcessThread = new Thread(applicationProcessRunnable());
+        applicationProcessThread.start();
+        applicationProcessRun = true;
+
+        this.process.onExit().thenApply((processFuture) -> {
+            applicationProcessRun = false;
+            return processFuture;
+        });
     }
 
-    public void launchVersionFile(File versionFile) throws Exception {
-        boolean realmTechVersion = RealmTechData.isRealmTechVersion(versionFile.getName());
-        if (!realmTechVersion) {
+    public static VersionApplicationProcess launchVersionFile(File versionFile) throws Exception {
+        if (!RealmTechData.isRealmTechVersion(versionFile.getName())) {
             throw new IllegalArgumentException("Try to execute a non RealmTech version");
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", versionFile.toString());
-        Process process = processBuilder.start();
-        processes.add(process);
+        return new VersionApplicationProcess(processBuilder.start());
+    }
+
+
+    public Runnable applicationProcessRunnable() {
+        return () -> {
+            while (applicationProcessRun) {
+                Thread.onSpinWait();
+            }
+            process.destroy();
+        };
+    }
+
+    @Override
+    public void close() throws IOException {
+        applicationProcessRun = false;
+        try {
+            applicationProcessThread.join();
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
     }
 }

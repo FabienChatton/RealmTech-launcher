@@ -1,7 +1,6 @@
 package ch.realmtech.launcher;
 
 import ch.realmtech.launcher.ctrl.MainLauncherCtrl;
-import ch.realmtech.launcher.wrk.VersionApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -12,22 +11,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class RealmTechLauncher extends Application {
+    private MainLauncherCtrl mainLauncherCtrl;
 
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(RealmTechLauncher.class.getResource("RealmTechLauncher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1024, 576);
-        MainLauncherCtrl mainLauncherCtrl = fxmlLoader.getController();
+        Scene launcherScreen = new Scene(fxmlLoader.load(), 1024, 576);
+        mainLauncherCtrl = fxmlLoader.getController();
 
         RealmTechData realmTechData = new RealmTechData(RealmTechData.RootPathClass.defaultRootPath());
-        VersionApplicationProcess versionApplicationProcess = new VersionApplicationProcess();
         mainLauncherCtrl.setRealmTechData(realmTechData);
-        mainLauncherCtrl.setApplicationProcess(versionApplicationProcess);
 
         mainLauncherCtrl.scanVersion();
 
         stage.setTitle("RealmTech Launcher");
-        stage.setScene(scene);
+        stage.setScene(launcherScreen);
         stage.show();
     }
 
@@ -38,5 +36,10 @@ public class RealmTechLauncher extends Application {
             System.out.println("No support for cli now. Execute this application without args.");
             Platform.exit();
         }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        mainLauncherCtrl.close();
     }
 }
