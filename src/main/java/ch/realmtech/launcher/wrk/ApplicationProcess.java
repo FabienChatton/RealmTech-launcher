@@ -4,13 +4,13 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-public class VersionApplicationProcess implements Closeable {
+public class ApplicationProcess implements Closeable {
 
     private final Process process;
     private final Thread applicationProcessThread;
     private volatile boolean applicationProcessRun;
 
-    public VersionApplicationProcess(Process process) {
+    public ApplicationProcess(Process process) {
         this.process = process;
         applicationProcessThread = new Thread(applicationProcessRunnable());
         applicationProcessThread.start();
@@ -22,13 +22,13 @@ public class VersionApplicationProcess implements Closeable {
         });
     }
 
-    public static VersionApplicationProcess launchVersionFile(File versionFile) throws Exception {
+    public static ApplicationProcess launchVersionFile(File versionFile) throws Exception {
         if (!RealmTechData.isRealmTechVersion(versionFile.getName())) {
             throw new IllegalArgumentException("Try to execute a non RealmTech version");
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", versionFile.toString());
-        return new VersionApplicationProcess(processBuilder.start());
+        return new ApplicationProcess(processBuilder.start());
     }
 
 

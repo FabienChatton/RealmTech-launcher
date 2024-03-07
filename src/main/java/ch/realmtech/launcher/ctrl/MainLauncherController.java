@@ -1,7 +1,8 @@
 package ch.realmtech.launcher.ctrl;
 
+import ch.realmtech.launcher.beans.SceneController;
+import ch.realmtech.launcher.wrk.ApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
-import ch.realmtech.launcher.wrk.VersionApplicationProcess;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
@@ -10,12 +11,14 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
-public class MainLauncherCtrl {
+public class MainLauncherController implements SceneController {
     @FXML
     private ComboBox<String> versionList;
 
+    static NavController navController;
+
     private RealmTechData realmTechData;
-    private VersionApplicationProcess versionApplicationProcess;
+    private ApplicationProcess applicationProcess;
 
     public void setRealmTechData(RealmTechData realmTechData) {
         this.realmTechData = realmTechData;
@@ -26,7 +29,7 @@ public class MainLauncherCtrl {
         Optional<File> selectedVersionFile = getSelectedVersionFile();
         if (selectedVersionFile.isPresent()) {
             try {
-                versionApplicationProcess = VersionApplicationProcess.launchVersionFile(selectedVersionFile.get());
+                applicationProcess = ApplicationProcess.launchVersionFile(selectedVersionFile.get());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -36,15 +39,14 @@ public class MainLauncherCtrl {
     }
 
     public void close() throws Exception {
-        if (versionApplicationProcess != null) {
-            versionApplicationProcess.close();
+        if (applicationProcess != null) {
+            applicationProcess.close();
         }
     }
 
     public void scanVersion() {
         List<String> versions = realmTechData.listVersion();
 
-        versionList.getItems().clear();
         versionList.getItems().addAll(versions);
         if (versionList.getSelectionModel().isEmpty()) {
             versionList.getSelectionModel().selectFirst();
@@ -58,5 +60,19 @@ public class MainLauncherCtrl {
         }
 
         return realmTechData.getVersionFile(selectedItem);
+    }
+
+    public NavController getNavController() {
+        return navController;
+    }
+
+    @Override
+    public void onShow() {
+
+    }
+
+    @Override
+    public void onResize(double width, double height) {
+
     }
 }
