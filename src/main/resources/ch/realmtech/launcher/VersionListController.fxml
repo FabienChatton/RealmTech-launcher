@@ -58,10 +58,10 @@
                         <TextArea fx:id="messageText" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
                      </content>
                   </ScrollPane>
-                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
                      <children>
-                        <Button mnemonicParsing="false" text="Telecharger" />
-                        <Button mnemonicParsing="false" text="Supprimer" />
+                        <Button fx:id="downloadVersionButton" onMouseClicked="#onVersionDownload" mnemonicParsing="false" style="-fx-background-color: lightgreen;" text="Télécharger" />
+                        <Button fx:id="deleteVersionButton" onMouseClicked="#onVersionDelete" mnemonicParsing="false" style="-fx-background-color: red;" text="Supprimer" />
                      </children>
                      <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -1,11 +1,15 @@
 package ch.realmtech.launcher.wrk;
 
+import ch.realmtech.launcher.beans.RemoteReleaseVersion;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RealmTechData {
     private final String rootPath;
@@ -35,15 +39,15 @@ public class RealmTechData {
         }
     }
 
-    private File getRootPathDirectory() {
+    public File getRootPathDirectory() {
         return Path.of(rootPath).toFile();
     }
 
-    private File getRootDataDirectory() {
+    public File getRootDataDirectory() {
         return Path.of(rootPath, ROOT_DATA).toFile();
     }
 
-    private File getVersionDirectory() {
+    public File getVersionDirectory() {
         File rootDataDirectory = getRootDataDirectory();
         return Path.of(rootDataDirectory.toPath().toString(), VERSIONS).toFile();
     }
@@ -53,7 +57,7 @@ public class RealmTechData {
         if (list == null) {
             return List.of();
         } else {
-            return List.of(list);
+            return Stream.of(list).sorted(Comparator.reverseOrder()).toList();
         }
     }
 
@@ -72,6 +76,14 @@ public class RealmTechData {
 
     public static boolean isRealmTechVersion(String fileName) {
         return fileName.matches("^RealmTech-\\d\\.\\d\\.\\d\\.jar$");
+    }
+
+    public boolean isReleasePresentOnLocal(RemoteReleaseVersion releaseVersion) {
+        return getVersionFile(releaseVersion.remoteReleaseAsset.name).isPresent();
+    }
+
+    public Optional<String> getLastedLocalVersion() {
+        return listVersion().stream().max(String::compareTo);
     }
 
     public static class RootPathClass {

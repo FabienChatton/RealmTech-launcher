@@ -1,6 +1,7 @@
 package ch.realmtech.launcher.ctrl;
 
 import ch.realmtech.launcher.beans.SceneController;
+import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.wrk.ApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import javafx.fxml.FXML;
@@ -31,10 +32,10 @@ public class MainLauncherController implements SceneController {
             try {
                 applicationProcess = ApplicationProcess.launchVersionFile(selectedVersionFile.get());
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                PopupHelper.builderError("Impossible de lancer la version", e).show();
             }
         } else {
-            System.out.println("Aucun version n'est sélectionnée");
+            PopupHelper.builderInformation("Aucun version n'est sélectionnée").show();
         }
     }
 
@@ -47,7 +48,7 @@ public class MainLauncherController implements SceneController {
     public void scanVersion() {
         List<String> versions = realmTechData.listVersion();
 
-        versionList.getItems().addAll(versions);
+        versionList.getItems().setAll(versions);
         if (versionList.getSelectionModel().isEmpty()) {
             versionList.getSelectionModel().selectFirst();
         }
@@ -68,11 +69,6 @@ public class MainLauncherController implements SceneController {
 
     @Override
     public void onShow() {
-
-    }
-
-    @Override
-    public void onResize(double width, double height) {
-
+        scanVersion();
     }
 }

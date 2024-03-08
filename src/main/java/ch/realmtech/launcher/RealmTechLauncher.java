@@ -2,6 +2,7 @@ package ch.realmtech.launcher;
 
 import ch.realmtech.launcher.ctrl.MainLauncherController;
 import ch.realmtech.launcher.ctrl.VersionListController;
+import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.ReleasesWrk;
 import javafx.application.Application;
@@ -27,13 +28,13 @@ public class RealmTechLauncher extends Application {
 
         RealmTechData realmTechData = new RealmTechData(RealmTechData.RootPathClass.defaultRootPath());
         ReleasesWrk releasesWrk = new ReleasesWrk();
+        releasesWrk.setRealmTechData(realmTechData);
 
         mainLauncherController.getNavController().setStage(stage);
         mainLauncherController.getNavController().setLauncherScene(launcherScene, mainLauncherController);
         mainLauncherController.getNavController().setVersionScene(versionListScene, versionListController);
 
         mainLauncherController.setRealmTechData(realmTechData);
-        mainLauncherController.scanVersion();
 
         versionListController.setReleasesWrk(releasesWrk);
         versionListController.reloadReleaseVersion();
@@ -42,7 +43,9 @@ public class RealmTechLauncher extends Application {
         stage.setTitle("RealmTech Launcher");
         stage.setScene(launcherScene);
         stage.show();
-        mainLauncherController.getNavController().onShow();
+        mainLauncherController.onShow();
+
+        releasesWrk.hasNewRemoteVersion().ifPresent((newRemoteVersionMessage) -> PopupHelper.builderInformation(newRemoteVersionMessage).show());
     }
 
     public static void main(String[] args) {

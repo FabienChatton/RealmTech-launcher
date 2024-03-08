@@ -69,17 +69,6 @@ public class NavController implements Initializable, SceneController {
 
     @Override
     public void onShow() {
-        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            onResize(newValue.doubleValue(), stage.getHeight());
-        });
-        stage.heightProperty().addListener((observable, oldValue, newValue) -> {
-            onResize(stage.getHeight(), newValue.doubleValue());
-        });
-    }
 
-    @Override
-    public void onResize(double width, double height) {
-        mainLauncherController.onResize(width, height);
-        versionListController.onResize(width, height);
     }
 }
