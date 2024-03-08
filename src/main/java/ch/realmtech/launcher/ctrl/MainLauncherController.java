@@ -5,11 +5,13 @@ import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.ApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
@@ -27,9 +29,14 @@ public class MainLauncherController implements SceneController, Initializable {
 
     private RealmTechData realmTechData;
     private ApplicationProcess applicationProcess;
+    private Stage stage;
 
     public void setRealmTechData(RealmTechData realmTechData) {
         this.realmTechData = realmTechData;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     @FXML
@@ -37,13 +44,20 @@ public class MainLauncherController implements SceneController, Initializable {
         Optional<File> selectedVersionFile = getSelectedVersionFile();
         if (selectedVersionFile.isPresent()) {
             try {
-                applicationProcess = ApplicationProcess.launchVersionFile(selectedVersionFile.get());
+                applicationProcess = ApplicationProcess.launchVersionFile(selectedVersionFile.get(), () -> Platform.runLater(this::onProcessClose));
+                Platform.setImplicitExit(false);
+                stage.hide();
             } catch (Exception e) {
                 PopupHelper.builderError("Impossible de lancer la version", e).show();
             }
         } else {
             PopupHelper.builderInformation("Aucun version n'est sélectionnée").show();
         }
+    }
+
+    public void onProcessClose() {
+        stage.show();
+        Platform.setImplicitExit(true);
     }
 
     public void close() throws Exception {

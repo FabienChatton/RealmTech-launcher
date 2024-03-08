@@ -35,6 +35,7 @@ public class RealmTechLauncher extends Application {
         mainLauncherController.getNavController().setVersionScene(versionListScene, versionListController);
 
         mainLauncherController.setRealmTechData(realmTechData);
+        mainLauncherController.setStage(stage);
 
         versionListController.setReleasesWrk(releasesWrk);
         versionListController.reloadReleaseVersion();
@@ -45,6 +46,13 @@ public class RealmTechLauncher extends Application {
         stage.show();
         mainLauncherController.onShow();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                mainLauncherController.close();
+            } catch (Exception e) {
+                Platform.runLater(() -> PopupHelper.builderError("Can not close application after shutdown", e));
+            }
+        }));
         releasesWrk.hasNewRemoteVersion().ifPresent((newRemoteVersionMessage) -> PopupHelper.builderInformation(newRemoteVersionMessage).show());
     }
 

@@ -9,26 +9,29 @@ public class ApplicationProcess implements Closeable {
     private final Process process;
     private final Thread applicationProcessThread;
     private volatile boolean applicationProcessRun;
+    private final Runnable onProcessClose;
 
-    public ApplicationProcess(Process process) {
+    public ApplicationProcess(Process process, Runnable onProcessClose) {
         this.process = process;
+        this.onProcessClose = onProcessClose;
         applicationProcessThread = new Thread(applicationProcessRunnable());
         applicationProcessThread.start();
         applicationProcessRun = true;
 
         this.process.onExit().thenApply((processFuture) -> {
             applicationProcessRun = false;
+            onProcessClose.run();
             return processFuture;
         });
     }
 
-    public static ApplicationProcess launchVersionFile(File versionFile) throws Exception {
+    public static ApplicationProcess launchVersionFile(File versionFile, Runnable onProcessClose) throws Exception {
         if (!RealmTechData.isRealmTechVersion(versionFile.getName())) {
             throw new IllegalArgumentException("Try to execute a non RealmTech version");
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", versionFile.toString());
-        return new ApplicationProcess(processBuilder.start());
+        return new ApplicationProcess(processBuilder.start(), onProcessClose);
     }
 
 
