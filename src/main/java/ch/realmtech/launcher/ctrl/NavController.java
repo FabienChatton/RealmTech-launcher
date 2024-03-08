@@ -38,14 +38,26 @@ public class NavController implements Initializable, SceneController {
 
     @FXML
     private void navLauncher(MouseEvent mouseEvent) {
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+
         stage.setScene(launcherScene);
         mainLauncherController.onShow();
+
+        stage.setWidth(width);
+        stage.setHeight(height);
     }
 
     @FXML
     private void navVersion(MouseEvent mouseEvent) {
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+
         stage.setScene(versionScene);
         versionListController.onShow();
+
+        stage.setWidth(width);
+        stage.setHeight(height);
     }
 
     @Override
@@ -58,10 +70,10 @@ public class NavController implements Initializable, SceneController {
     @Override
     public void onShow() {
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            onResize(newValue.doubleValue(), 0);
+            onResize(newValue.doubleValue(), stage.getHeight());
         });
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
-            onResize(0, newValue.doubleValue());
+            onResize(stage.getHeight(), newValue.doubleValue());
         });
     }
 

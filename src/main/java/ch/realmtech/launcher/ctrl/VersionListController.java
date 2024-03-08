@@ -6,9 +6,9 @@ import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.ReleasesWrk;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 
 import java.net.URL;
 import java.util.List;
@@ -21,7 +21,7 @@ public class VersionListController implements Initializable, SceneController {
     @FXML
     private ListView<RemoteReleaseVersion> versionListView;
     @FXML
-    private Label messageLabel;
+    private TextArea messageText;
     private ReleasesWrk releasesWrk;
     private RealmTechData realmTechData;
 
@@ -45,7 +45,7 @@ public class VersionListController implements Initializable, SceneController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         versionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            messageLabel.setText(newValue.message);
+            messageText.setText(newValue.message);
         });
 
     }
