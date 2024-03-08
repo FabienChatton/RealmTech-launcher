@@ -2,20 +2,27 @@ package ch.realmtech.launcher.ctrl;
 
 import ch.realmtech.launcher.beans.SceneController;
 import ch.realmtech.launcher.helper.PopupHelper;
+import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.ApplicationProcess;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.web.WebView;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class MainLauncherController implements SceneController {
+public class MainLauncherController implements SceneController, Initializable {
+    @FXML
+    public WebView webView;
     @FXML
     private ComboBox<String> versionList;
-
+    @FXML
     static NavController navController;
 
     private RealmTechData realmTechData;
@@ -68,7 +75,14 @@ public class MainLauncherController implements SceneController {
     }
 
     @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        webView.getEngine().getLoadWorker().stateProperty().addListener(new WebViewListener(webView));
+    }
+
+    @Override
     public void onShow() {
         scanVersion();
+
+        webView.getEngine().load("https://chattonf01.emf-informatique.ch/RealmTech");
     }
 }

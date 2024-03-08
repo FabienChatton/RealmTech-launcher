@@ -3,13 +3,21 @@ package ch.realmtech.launcher.ctrl;
 import ch.realmtech.launcher.beans.RemoteReleaseVersion;
 import ch.realmtech.launcher.beans.SceneController;
 import ch.realmtech.launcher.helper.PopupHelper;
+import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.ReleasesWrk;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.web.WebView;
 import javafx.util.Callback;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 import java.net.URL;
 import java.util.List;
@@ -17,19 +25,26 @@ import java.util.ResourceBundle;
 import java.util.function.IntConsumer;
 
 public class VersionListController implements Initializable, SceneController {
-
     @FXML
-    private ScrollPane messageScrollPane;
+    public WebView webView;
     @FXML
     private ListView<RemoteReleaseVersion> versionListView;
     @FXML
-    private TextArea messageText;
+    public GridPane browserGrid;
     @FXML
     private Button downloadVersionButton;
     @FXML
     private Button deleteVersionButton;
     private ReleasesWrk releasesWrk;
     private RealmTechData realmTechData;
+    private final Parser markdownParser;
+    private final HtmlRenderer htmlRenderer;
+
+
+    public VersionListController() {
+        markdownParser = Parser.builder().build();
+        htmlRenderer = HtmlRenderer.builder().build();
+    }
 
     public void setReleasesWrk(ReleasesWrk releasesWrk) {
         this.releasesWrk = releasesWrk;
@@ -50,6 +65,8 @@ public class VersionListController implements Initializable, SceneController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        webView.getEngine().getLoadWorker().stateProperty().addListener(new WebViewListener(webView));
+
         versionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             setVersionContent(newValue);
         });
@@ -77,7 +94,11 @@ public class VersionListController implements Initializable, SceneController {
     }
 
     private void setVersionContent(RemoteReleaseVersion selectedVersion) {
-        messageText.setText(selectedVersion.message);
+        Node markdownDocument = markdownParser.parse(selectedVersion.message);
+        String markdownRender = htmlRenderer.render(markdownDocument);
+
+        webView.getEngine().loadContent(markdownRender);
+
         downloadVersionButton.setDisable(selectedVersion.isInstalled);
         deleteVersionButton.setDisable(!selectedVersion.isInstalled);
     }
