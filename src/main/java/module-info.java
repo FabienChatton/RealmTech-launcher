@@ -9,6 +9,7 @@ module ch.realmtech.launcher {
     requires org.commonmark;
     requires java.desktop;
     requires jdk.xml.dom;
+    requires jdk.crypto.ec;
 
     opens ch.realmtech.launcher to javafx.fxml;
     opens ch.realmtech.launcher.ctrl to javafx.fxml;
