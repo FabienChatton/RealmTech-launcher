@@ -11,7 +11,6 @@ import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLAnchorElement;
 
 import java.awt.*;
-import java.io.IOException;
 import java.net.URI;
 
 public class WebViewListener implements ChangeListener<Worker.State> {
@@ -36,8 +35,8 @@ public class WebViewListener implements ChangeListener<Worker.State> {
 
                 try {
                     Desktop.getDesktop().browse(URI.create(href));
-                } catch (IOException e) {
-                    PopupHelper.builderError("Can not open link", e);
+                } catch (Exception e) {
+                    PopupHelper.builderError("Can not open link", e).show();
                 }
             }, false);
         }
