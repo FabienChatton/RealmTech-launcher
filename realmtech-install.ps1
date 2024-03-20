@@ -1,9 +1,9 @@
 $realmtechRoot="$Env:appdata\RealmTechData\"
 $realmtechLauncherDirectory="$($realmtechRoot)launcher\"
-$realmtechLauncherImage="$($realmtechLauncherDirectory)image\"
 
 $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/FabienChatton/RealmTech-launcher/releases/latest"
 $realmtechOrigine = $latest.assets[0].browser_download_url
+$tempZip="$($realmtechLauncherDirectory)temp.zip"
 
 if (!(Test-Path -Path $realmtechRoot)) {
 	New-Item -ItemType Directory -Path $realmtechRoot
@@ -11,8 +11,8 @@ if (!(Test-Path -Path $realmtechRoot)) {
 if (!(Test-Path -Path $realmtechLauncherDirectory)) {
 	New-Item -ItemType Directory -Path $realmtechLauncherDirectory
 }
-if (!(Test-Path -Path $realmtechLauncherImage)) {
-	New-Item -ItemType Directory -Path $realmtechLauncherImage
+if (!(Test-Path -Path $realmtechLauncherDirectory)) {
+	New-Item -ItemType Directory -Path $realmtechLauncherDirectory
 }
 
 function DownloadFile($url, $targetFile)
@@ -41,7 +41,7 @@ function DownloadFile($url, $targetFile)
    $responseStream.Dispose()
 }
 
-$tempZip="$($realmtechLauncherImage)temp-$($latest.assets[0].name)"
+
 echo "downloading RealmTech-launcher $($latest.assets[0].name)..."
 try {
 	DownloadFile $realmtechOrigine $tempZip
@@ -50,12 +50,14 @@ try {
 	echo $_
 	exit
 }
-Expand-Archive $tempZip -DestinationPath $realmtechLauncherImage
-Remove-Item $tempZip
 
+Expand-Archive $tempZip -DestinationPath $realmtechLauncherDirectory
+Remove-Item $tempZip
+$folderName = "$($realmtechLauncherDirectory)$($latest.assets[0].name)" -replace ".{4}$"
+robocopy $folderName $realmtechLauncherDirectory /S /Move /np /nfl
 
 # create shortcut on desktop
-$title    = 'Create short cut on desktop'
+$title    = 'Create shortcut on desktop'
 $question = 'Do you want create a shortcut on your desktop'
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
@@ -64,12 +66,12 @@ if ($decision -eq 0) {
 	$DesktopPath = [Environment]::GetFolderPath("Desktop")
 	$WshShell = New-Object -comObject WScript.Shell
 	$Shortcut = $WshShell.CreateShortcut("$DesktopPath\RealmTech-Launcher.lnk")
-	$Shortcut.TargetPath = "$($realmtechLauncherImage)bin\RealmTech-launcher.bat"
+	$Shortcut.TargetPath = "$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat"
 	$Shortcut.Save()
 }
 
 # create shortcut in start menu
-$title    = 'Create short cut in start munu'
+$title    = 'Create shortcut in start munu'
 $question = 'Do you want create a shortcut in your start menu ? This require admin previlege'
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
@@ -81,13 +83,13 @@ if ($decision -eq 0) {
 		$tempFile = Get-ChildItem ([IO.Path]::GetTempFileName()) | Rename-Item -NewName { [IO.Path]::ChangeExtension($_, ".ps1") } -PassThru
 		echo "`$WshShell = New-Object -comObject WScript.Shell;" >> $tempFile
 		echo "`$Shortcut = `$WshShell.CreateShortcut('C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RealmTech-Launcher.lnk');" >> $tempFile
-		echo "`$Shortcut.TargetPath = '$($realmtechLauncherImage)bin\RealmTech-launcher.bat;" >> $tempFile
+		echo "`$Shortcut.TargetPath = '$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat';" >> $tempFile
 		echo "`$Shortcut.Save();" >> $tempFile
 		Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass $tempFile" -Verb RunAs;
 	} else {
 		$WshShell = New-Object -comObject WScript.Shell;
 		$Shortcut = $WshShell.CreateShortcut('C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RealmTech-Launcher.lnk');
-		$Shortcut.TargetPath = "$($realmtechLauncherImage)bin\RealmTech-launcher.bat";
+		$Shortcut.TargetPath = "$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat";
 		$Shortcut.Save();
 	}
 }
@@ -97,5 +99,5 @@ $question = 'Do you want to play RealmTech ?'
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
 if ($decision -eq 0) {
-	Start-Process "$($realmtechLauncherImage)bin\RealmTech-launcher.bat"
+	Start-Process "$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat"
 }
