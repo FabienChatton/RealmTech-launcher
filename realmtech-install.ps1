@@ -1,8 +1,17 @@
+if($ENV:OS -ne "Windows_NT"){
+  Write-Host "You're not on Windows"
+  exit(1)
+}
+
 $realmtechRoot="$Env:appdata\RealmTechData\"
 $realmtechLauncherDirectory="$($realmtechRoot)launcher\"
-
 $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/FabienChatton/RealmTech-launcher/releases/latest"
-$realmtechOrigine = $latest.assets[0].browser_download_url
+foreach ($item in $latest.assets){
+  if($item -like "*.zip"){
+    $realmtechOrigine = $item.browser_download_url
+  }
+}
+
 $tempZip="$($realmtechLauncherDirectory)temp.zip"
 
 if (!(Test-Path -Path $realmtechRoot)) {
@@ -71,7 +80,7 @@ if ($decision -eq 0) {
 }
 
 # create shortcut in start menu
-$title    = 'Create shortcut in start munu'
+$title    = 'Create shortcut in start menu'
 $question = 'Do you want create a shortcut in your start menu ? This require admin previlege'
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
