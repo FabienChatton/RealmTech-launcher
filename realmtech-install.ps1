@@ -7,11 +7,11 @@ $realmtechRoot="$Env:appdata\RealmTechData\"
 $realmtechLauncherDirectory="$($realmtechRoot)launcher\"
 $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/FabienChatton/RealmTech-launcher/releases/latest"
 foreach ($item in $latest.assets){
-  if($item -like "*.zip"){
+  if($item.name -like "*.zip"){
     $realmtechOrigine = $item.browser_download_url
+    $realmtechName = $item.name
   }
 }
-
 $tempZip="$($realmtechLauncherDirectory)temp.zip"
 
 if (!(Test-Path -Path $realmtechRoot)) {
@@ -51,7 +51,7 @@ function DownloadFile($url, $targetFile)
 }
 
 
-echo "downloading RealmTech-launcher $($latest.assets[0].name)..."
+echo "downloading RealmTech-launcher $($realmtechName)..."
 try {
 	DownloadFile $realmtechOrigine $tempZip
 } catch {
@@ -60,11 +60,11 @@ try {
 	exit
 }
 
-Expand-Archive $tempZip -DestinationPath $realmtechLauncherDirectory
+Expand-Archive $tempZip -DestinationPath $realmtechLauncherDirectory -Force
 Remove-Item $tempZip
-$folderName = "$($realmtechLauncherDirectory)$($latest.assets[0].name)" -replace ".{4}$"
+$folderName = "$($realmtechLauncherDirectory)$($realmtechName)" -replace ".{4}$"
 robocopy $folderName $realmtechLauncherDirectory /S /Move /np /nfl
-
+Remove-Item $folderName -Recurse
 # create shortcut on desktop
 $title    = 'Create shortcut on desktop'
 $question = 'Do you want create a shortcut on your desktop'
