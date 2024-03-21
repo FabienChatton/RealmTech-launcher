@@ -9,7 +9,11 @@ launcherPath="$rootPath/launcher"
 mkdir -p "$launcherPath"
 
 curl -# -L -o "$launcherPath/temp.tar" "$downloadUrl"
-tar -xf temp.tar -C "$launcherPath" --overwrite
+if ! test -e "$launcherPath/temp.tar"; then
+    echo "Download Failed exiting..."
+    exit
+fi
+tar -xf "$launcherPath"/temp.tar -C "$launcherPath" --overwrite
 rsync -av --remove-source-files "$launcherPath"/"$buildName"/* "$launcherPath"/
 rm "$launcherPath"/temp.tar
 rm -rf "${launcherPath}"/"$buildName"
