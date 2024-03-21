@@ -3,8 +3,11 @@ if($ENV:OS -ne "Windows_NT"){
   exit(1)
 }
 
+
 $realmtechRoot="$Env:appdata\RealmTechData\"
 $realmtechLauncherDirectory="$($realmtechRoot)launcher\"
+$realmtechLauncherDirectoryBin = "$($realmtechLauncherDirectory)bin\"
+$realmtechLauncherDirectoryLib = "$($realmtechLauncherDirectory)lib\"
 $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/FabienChatton/RealmTech-launcher/releases/latest"
 foreach ($item in $latest.assets){
   if($item.name -like "*.zip"){
@@ -23,6 +26,17 @@ if (!(Test-Path -Path $realmtechLauncherDirectory)) {
 if (!(Test-Path -Path $realmtechLauncherDirectory)) {
 	New-Item -ItemType Directory -Path $realmtechLauncherDirectory
 }
+if (!(Test-Path -Path $realmtechLauncherDirectoryBin)) {
+	New-Item -ItemType Directory -Path $realmtechLauncherDirectoryBin
+}
+if (!(Test-Path -Path $realmtechLauncherDirectoryLib)) {
+	New-Item -ItemType Directory -Path $realmtechLauncherDirectoryLib
+}
+
+
+wget https://chattonf01.emf-informatique.ch/RealmTech/favicon.ico -o "$($realmtechLauncherDirectoryLib)favicon.icon"
+
+
 
 function DownloadFile($url, $targetFile)
 {
@@ -76,6 +90,7 @@ if ($decision -eq 0) {
 	$WshShell = New-Object -comObject WScript.Shell
 	$Shortcut = $WshShell.CreateShortcut("$DesktopPath\RealmTech-Launcher.lnk")
 	$Shortcut.TargetPath = "$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat"
+	$Shortcut.IconLocation = "$($realmtechLauncherDirectoryLib)favicon.icon";
 	$Shortcut.Save()
 }
 
@@ -93,6 +108,7 @@ if ($decision -eq 0) {
 		echo "`$WshShell = New-Object -comObject WScript.Shell;" >> $tempFile
 		echo "`$Shortcut = `$WshShell.CreateShortcut('C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RealmTech-Launcher.lnk');" >> $tempFile
 		echo "`$Shortcut.TargetPath = '$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat';" >> $tempFile
+		echo "`$Shortcut.IconLocation = '$($realmtechLauncherDirectoryLib)favicon.icon';" >> $tempFile
 		echo "`$Shortcut.Save();" >> $tempFile
 		Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass $tempFile" -Verb RunAs;
 	} else {
@@ -110,3 +126,4 @@ $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
 if ($decision -eq 0) {
 	Start-Process "$($realmtechLauncherDirectory)bin\RealmTech-launcher.bat"
 }
+
