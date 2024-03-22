@@ -99,7 +99,7 @@ public class RealmTechData {
                 rootPath = System.getenv("AppData");
             } else {
                 // linux
-                rootPath = System.getProperty("user.home");
+                rootPath = System.getProperty("user.home") + "/.local";
             }
             return new RootPathClass(rootPath);
         }
