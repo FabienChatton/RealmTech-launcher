@@ -116,11 +116,10 @@ Remove-Item $tempZip
 $folderName = "$($realmtechLauncherDirectory)$($realmtechName)" -replace ".{4}$"
 robocopy $folderName $realmtechLauncherDirectory /S /Move /np /nfl /NDL /NJH /NJS
 
-try {
+if (Test-Path -Path $realmtechLauncherDirectory) {
 	rm $folderName -Recurse -Force
-} catch {
-
 }
+
 # create shortcut on desktop
 $title    = 'Create shortcut on desktop'
 $question = 'Do you want create a shortcut on your desktop'
