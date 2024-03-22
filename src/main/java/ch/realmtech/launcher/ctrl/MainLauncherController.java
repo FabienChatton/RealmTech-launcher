@@ -1,9 +1,11 @@
 package ch.realmtech.launcher.ctrl;
 
+import ch.realmtech.launcher.beans.LauncherRelease;
 import ch.realmtech.launcher.beans.SceneController;
 import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.ApplicationProcess;
+import ch.realmtech.launcher.wrk.LauncherUpdate;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -29,6 +31,7 @@ public class MainLauncherController implements SceneController, Initializable {
 
     private RealmTechData realmTechData;
     private ApplicationProcess applicationProcess;
+    private LauncherUpdate launcherUpdate;
     private Stage stage;
 
     public void setRealmTechData(RealmTechData realmTechData) {
@@ -90,6 +93,11 @@ public class MainLauncherController implements SceneController, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        launcherUpdate = new LauncherUpdate();
+
+        // exit programme if success
+        handlerNewVersion();
+
         webView.getEngine().getLoadWorker().stateProperty().addListener(new WebViewListener(webView));
     }
 
@@ -98,5 +106,28 @@ public class MainLauncherController implements SceneController, Initializable {
         scanVersion();
 
         webView.getEngine().load("https://chattonf01.emf-informatique.ch/RealmTech");
+    }
+
+    private void handlerNewVersion() {
+        Optional<LauncherRelease> launcherReleaseOpt;
+        try {
+            launcherReleaseOpt = launcherUpdate.hasLauncherUpdateAvailable();
+        } catch (Exception e) {
+            PopupHelper.builderError("Impossible de trouver la nouvelle version du launcher", e).show();
+            return;
+        }
+
+        if (launcherReleaseOpt.isPresent()) {
+            LauncherRelease launcherRelease = launcherReleaseOpt.get();
+            if (PopupHelper.builderConfirmation(String.format("Il y a une nouvelle version du launcher, la version %s est disponible, sortie le %s. Voulez la télécharger", launcherRelease.version, launcherRelease.publishedAt.toString()))
+                    .showAndWait()) {
+                try {
+                    // exit programme if success
+                    launcherUpdate.update();
+                } catch (Exception e) {
+                    PopupHelper.builderError("Impossible de lancer la mise à jour", e).show();
+                }
+            }
+        }
     }
 }
