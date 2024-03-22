@@ -3,11 +3,12 @@ package ch.realmtech.launcher.beans;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RemoteRelease {
+public class RemoteRelease implements Serializable {
     @JsonProperty("body")
     public String message;
 

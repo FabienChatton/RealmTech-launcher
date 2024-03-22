@@ -2,8 +2,10 @@ package ch.realmtech.launcher.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.Serializable;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RateLimite {
+public class RateLimite implements Serializable {
 
     public Resources resources;
 

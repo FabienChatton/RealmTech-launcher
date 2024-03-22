@@ -15,6 +15,7 @@ public class RealmTechData {
     private final String rootPath;
     private final static String ROOT_DATA = "RealmTechData";
     private final static String VERSIONS = "versions";
+    private final static String CACHE = "launcher/.cache";
 
     public RealmTechData(RootPathClass rootPathClass) throws IOException {
         this.rootPath = rootPathClass.rootPath;
@@ -37,6 +38,11 @@ public class RealmTechData {
         if (!versionDirectory.exists()) {
             Files.createDirectory(versionDirectory.toPath());
         }
+
+        File cacheDirectory = getCacheDirectory();
+        if (!cacheDirectory.exists()) {
+            Files.createDirectory(cacheDirectory.toPath());
+        }
     }
 
     public File getRootPathDirectory() {
@@ -45,6 +51,9 @@ public class RealmTechData {
 
     public File getRootDataDirectory() {
         return Path.of(rootPath, ROOT_DATA).toFile();
+    }
+    public File getCacheDirectory() {
+        return Path.of(rootPath, ROOT_DATA, CACHE).toFile();
     }
 
     public File getVersionDirectory() {

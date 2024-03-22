@@ -5,8 +5,9 @@ import ch.realmtech.launcher.beans.SceneController;
 import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.ApplicationProcess;
-import ch.realmtech.launcher.wrk.LauncherUpdate;
+import ch.realmtech.launcher.wrk.GetLauncherUpdate;
 import ch.realmtech.launcher.wrk.RealmTechData;
+import ch.realmtech.launcher.wrk.UpdateLauncher;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,7 +33,8 @@ public class MainLauncherController implements SceneController, Initializable {
 
     private RealmTechData realmTechData;
     private ApplicationProcess applicationProcess;
-    private LauncherUpdate launcherUpdate;
+    private UpdateLauncher launcherUpdate;
+    private GetLauncherUpdate getLauncherUpdate;
     private Stage stage;
 
     public void setRealmTechData(RealmTechData realmTechData) {
@@ -94,10 +96,6 @@ public class MainLauncherController implements SceneController, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        launcherUpdate = new LauncherUpdate();
-        // exit programme if success
-        handlerNewVersion();
-
         try {
             webView.getEngine().setUserDataDirectory(Files.createTempDirectory("RealmTech-web-views-userDataDirectory").toFile());
         } catch (Exception e) { }
@@ -106,6 +104,8 @@ public class MainLauncherController implements SceneController, Initializable {
 
     @Override
     public void onShow() {
+        // exit programme if success
+        handlerNewVersion();
         scanVersion();
 
         webView.getEngine().load("https://chattonf01.emf-informatique.ch/RealmTech");
@@ -114,7 +114,7 @@ public class MainLauncherController implements SceneController, Initializable {
     private void handlerNewVersion() {
         Optional<LauncherRelease> launcherReleaseOpt;
         try {
-            launcherReleaseOpt = launcherUpdate.hasLauncherUpdateAvailable();
+            launcherReleaseOpt = getLauncherUpdate.getLauncherUpdate();
         } catch (Exception e) {
             PopupHelper.builderError("Impossible de trouver la nouvelle version du launcher", e).show();
             return;
@@ -132,5 +132,13 @@ public class MainLauncherController implements SceneController, Initializable {
                 }
             }
         }
+    }
+
+    public void setGetLauncherUpdate(GetLauncherUpdate getLauncherUpdate) {
+        this.getLauncherUpdate = getLauncherUpdate;
+    }
+
+    public void setUpdateLauncher(UpdateLauncher launcherUpdate) {
+        this.launcherUpdate = launcherUpdate;
     }
 }

@@ -1,9 +1,10 @@
 package ch.realmtech.launcher.beans;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class RemoteReleaseVersion {
+public class RemoteReleaseVersion implements Serializable {
     public RemoteReleaseAsset remoteReleaseAsset;
     public String message;
     public Date publishedAt;

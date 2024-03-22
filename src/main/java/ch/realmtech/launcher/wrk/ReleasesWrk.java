@@ -19,11 +19,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.IntConsumer;
 import java.util.zip.GZIPInputStream;
 
-public class ReleasesWrk {
+public class ReleasesWrk implements GetVersionsReleases, ReleasesCtrl {
     private final static String RELEASE_URI = "https://api.github.com/repos/FabienChatton/RealmTech/releases";
     private final HttpClient httpClient;
     private final ObjectMapper mapper;
     private RealmTechData realmTechData;
+    private GetVersionsReleases getVersionsReleases;
 
     public ReleasesWrk() {
         this.httpClient = HttpClient.newBuilder()
@@ -32,6 +33,7 @@ public class ReleasesWrk {
         this.mapper = new ObjectMapper();
     }
 
+    @Override
     public List<RemoteReleaseVersion> getVersionsReleases() throws Exception {
         if (!GithubRateLimit.hasRemaining()) return List.of();
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -53,6 +55,7 @@ public class ReleasesWrk {
                 .toList();
     }
 
+    @Override
     public void downloadVersionRelease(String downloadUrl, String downloadVersionName, Runnable onSuccess, IntConsumer onFail) throws Exception {
         if (!GithubRateLimit.hasRemaining()) return;
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -81,7 +84,7 @@ public class ReleasesWrk {
 
     public Optional<RemoteReleaseVersion> getLastedRemoteVersion() {
         try {
-            return getVersionsReleases().stream()
+            return getVersionsReleases.getVersionsReleases().stream()
                     .min((o1, o2) -> o2.publishedAt.compareTo(o1.publishedAt));
         } catch (Exception e) {
             return Optional.empty();
@@ -108,11 +111,16 @@ public class ReleasesWrk {
         }
     }
 
+    @Override
     public void deleteVersionRelease(RemoteReleaseVersion releaseVersion) {
         realmTechData.getVersionFile(releaseVersion.remoteReleaseAsset.name).ifPresent(File::delete);
     }
 
     public void setRealmTechData(RealmTechData realmTechData) {
         this.realmTechData = realmTechData;
+    }
+
+    public void setGetCache(GetVersionsReleases getVersionsReleases) {
+        this.getVersionsReleases = getVersionsReleases;
     }
 }

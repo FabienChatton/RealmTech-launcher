@@ -4,6 +4,7 @@ import ch.realmtech.launcher.beans.RemoteReleaseVersion;
 import ch.realmtech.launcher.beans.SceneController;
 import ch.realmtech.launcher.helper.PopupHelper;
 import ch.realmtech.launcher.ihm.WebViewListener;
+import ch.realmtech.launcher.wrk.GetVersionsReleases;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.ReleasesWrk;
 import javafx.fxml.FXML;
@@ -38,6 +39,7 @@ public class VersionListController implements Initializable, SceneController {
     private Button deleteVersionButton;
     private ReleasesWrk releasesWrk;
     private RealmTechData realmTechData;
+    private GetVersionsReleases getVersionsReleases;
     private final Parser markdownParser;
     private final HtmlRenderer htmlRenderer;
 
@@ -57,7 +59,7 @@ public class VersionListController implements Initializable, SceneController {
 
     public void reloadReleaseVersion() {
         try {
-            List<RemoteReleaseVersion> versionsReleases = releasesWrk.getVersionsReleases();
+            List<RemoteReleaseVersion> versionsReleases = getVersionsReleases.getVersionsReleases();
             versionListView.getItems().setAll(versionsReleases);
         } catch (Exception e) {
             PopupHelper.builderError("Can not fetch releases version.", e).show();
@@ -144,5 +146,9 @@ public class VersionListController implements Initializable, SceneController {
             versionListView.getSelectionModel().selectFirst();
         }
         versionListView.refresh();
+    }
+
+    public void setGetVersionsReleases(GetVersionsReleases getVersionsReleases) {
+        this.getVersionsReleases = getVersionsReleases;
     }
 }

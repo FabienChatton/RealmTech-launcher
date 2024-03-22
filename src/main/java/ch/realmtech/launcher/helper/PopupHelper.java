@@ -46,7 +46,7 @@ public class PopupHelper {
         }
     }
 
-    public static class PopupConfirmation extends PopupBuilder<PopupInformationBuilder> {
+    public static class PopupConfirmation extends PopupBuilder<PopupConfirmation> {
         public PopupConfirmation(Alert.AlertType alertType, String message) {
             super(alertType, message);
         }
@@ -70,6 +70,7 @@ public class PopupHelper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static class PopupBuilder<T extends PopupBuilder<T>> {
         private final PopupData popupData;
 

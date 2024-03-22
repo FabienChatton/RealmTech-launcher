@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
-public class LauncherUpdate {
+public class LauncherUpdate implements GetLauncherUpdate, UpdateLauncher {
     private final static String LAUNCHER_RELEASE_URI = "https://api.github.com/repos/FabienChatton/RealmTech-launcher/releases/latest";
     private final HttpClient httpClient;
     private final ObjectMapper mapper;
@@ -24,7 +24,7 @@ public class LauncherUpdate {
         this.mapper = new ObjectMapper();
     }
 
-    public Optional<LauncherRelease> hasLauncherUpdateAvailable() throws Exception {
+    public Optional<LauncherRelease> getLauncherUpdate() throws Exception {
         if (!GithubRateLimit.hasRemaining()) return Optional.empty();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(LAUNCHER_RELEASE_URI))
