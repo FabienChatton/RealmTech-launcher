@@ -33,6 +33,7 @@ public class ReleasesWrk {
     }
 
     public List<RemoteReleaseVersion> getVersionsReleases() throws Exception {
+        if (!GithubRateLimit.hasRemaining()) return List.of();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(RELEASE_URI))
                 .GET()
@@ -43,6 +44,8 @@ public class ReleasesWrk {
         InputStream responseStream = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip")
                 ? new GZIPInputStream(response.body())
                 : response.body();
+
+        GithubRateLimit.consumeRequest();
         List<RemoteRelease> releases = mapper.readValue(responseStream, new TypeReference<>() {});
         return releases.stream()
                 .map((remoteRelease) -> remoteRelease.assets.stream().map((asset) -> new RemoteReleaseVersion(asset, remoteRelease.message, remoteRelease.publishedAt)).toList())
@@ -51,6 +54,7 @@ public class ReleasesWrk {
     }
 
     public void downloadVersionRelease(String downloadUrl, String downloadVersionName, Runnable onSuccess, IntConsumer onFail) throws Exception {
+        if (!GithubRateLimit.hasRemaining()) return;
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(downloadUrl))
                 .GET()

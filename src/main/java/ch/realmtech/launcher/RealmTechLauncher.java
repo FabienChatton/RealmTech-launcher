@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class RealmTechLauncher extends Application {
-    public final static String LAUNCHER_VERSION = "0.1.1";
+    public final static String LAUNCHER_VERSION = "0.1.2";
     private MainLauncherController mainLauncherController;
 
     @Override
@@ -42,7 +42,7 @@ public class RealmTechLauncher extends Application {
         versionListController.reloadReleaseVersion();
         versionListController.setRealmTechData(realmTechData);
 
-        stage.setTitle("RealmTech Launcher");
+        stage.setTitle("RealmTech Launcher " + LAUNCHER_VERSION);
         stage.setScene(launcherScene);
         stage.show();
         mainLauncherController.onShow();
@@ -51,7 +51,7 @@ public class RealmTechLauncher extends Application {
             try {
                 mainLauncherController.close();
             } catch (Exception e) {
-                Platform.runLater(() -> PopupHelper.builderError("Can not close application after shutdown", e));
+                Platform.runLater(() -> PopupHelper.builderError("Can not close application after shutdown", e).show());
             }
         }));
         releasesWrk.hasNewRemoteVersion().ifPresent((newRemoteVersionMessage) -> PopupHelper.builderInformation(newRemoteVersionMessage).show());

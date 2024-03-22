@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -94,10 +95,12 @@ public class MainLauncherController implements SceneController, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         launcherUpdate = new LauncherUpdate();
-
         // exit programme if success
         handlerNewVersion();
 
+        try {
+            webView.getEngine().setUserDataDirectory(Files.createTempDirectory("RealmTech-web-views-userDataDirectory").toFile());
+        } catch (Exception e) { }
         webView.getEngine().getLoadWorker().stateProperty().addListener(new WebViewListener(webView));
     }
 

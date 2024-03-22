@@ -20,6 +20,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.IntConsumer;
@@ -66,6 +67,10 @@ public class VersionListController implements Initializable, SceneController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         webView.getEngine().getLoadWorker().stateProperty().addListener(new WebViewListener(webView));
+
+        try {
+            webView.getEngine().setUserDataDirectory(Files.createTempDirectory("RealmTech-web-views-userDataDirectory").toFile());
+        } catch (Exception e) { }
 
         versionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             setVersionContent(newValue);

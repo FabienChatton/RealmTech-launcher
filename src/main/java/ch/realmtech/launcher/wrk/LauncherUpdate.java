@@ -25,6 +25,7 @@ public class LauncherUpdate {
     }
 
     public Optional<LauncherRelease> hasLauncherUpdateAvailable() throws Exception {
+        if (!GithubRateLimit.hasRemaining()) return Optional.empty();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(LAUNCHER_RELEASE_URI))
                 .GET()
@@ -36,6 +37,7 @@ public class LauncherUpdate {
                 ? new GZIPInputStream(response.body())
                 : response.body();
 
+        GithubRateLimit.consumeRequest();
         LauncherRelease launcherRelease = mapper.readValue(responseStream, new TypeReference<>() {});
 
         if (launcherRelease.version.compareTo(RealmTechLauncher.LAUNCHER_VERSION) > 0) {
