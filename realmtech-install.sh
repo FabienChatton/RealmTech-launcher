@@ -43,7 +43,7 @@ rootPath="$HOME"/.local/RealmTechData
 launcherPath="$rootPath/launcher"
 
 mkdir -p "$launcherPath"
-
+rm -rf "$launcherPath"
 curl -# -L -o "$launcherPath/temp.tar" "$downloadUrl"
 if ! test -e "$launcherPath/temp.tar"; then
     echo "Download Failed exiting..."
