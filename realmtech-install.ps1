@@ -67,8 +67,9 @@ if (!(Test-Path -Path $realmtechLauncherDirectoryBin)) {
 }
 if (!(Test-Path -Path $realmtechLauncherDirectoryLib)) {
 	New-Item -ItemType Directory -Path $realmtechLauncherDirectoryLib
+}else{
+	Remove-Item -Path $realmtechLauncherDirectoryLib* -Recurse -Force
 }
-
 
 wget https://chattonf01.emf-informatique.ch/RealmTech/favicon.ico -o "$($realmtechLauncherDirectoryLib)favicon.icon"
 
