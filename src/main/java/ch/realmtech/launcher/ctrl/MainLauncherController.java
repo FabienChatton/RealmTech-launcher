@@ -9,6 +9,7 @@ import ch.realmtech.launcher.wrk.GetLauncherUpdate;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.UpdateLauncher;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -140,5 +141,14 @@ public class MainLauncherController implements SceneController, Initializable {
 
     public void setUpdateLauncher(UpdateLauncher launcherUpdate) {
         this.launcherUpdate = launcherUpdate;
+    }
+
+    public void onRefreshCache(ActionEvent actionEvent) {
+        try {
+            getLauncherUpdate.forceRefreshCache();
+            PopupHelper.builderInformation("Le cache à été refresh").show();
+        } catch (Exception e) {
+            PopupHelper.builderError("Impossible de rafraîchir le cache", e).show();
+        }
     }
 }

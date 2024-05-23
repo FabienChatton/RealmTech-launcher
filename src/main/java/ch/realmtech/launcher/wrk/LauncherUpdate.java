@@ -61,4 +61,9 @@ public class LauncherUpdate implements GetLauncherUpdate, UpdateLauncher {
         }
         System.exit(0);
     }
+
+    @Override
+    public void forceRefreshCache() {
+
+    }
 }

@@ -112,4 +112,10 @@ public class LocalCache implements GetVersionsReleases, GetLauncherUpdate {
     public Optional<LauncherRelease> getLauncherUpdate() {
         return Optional.ofNullable(launcherReleaseCache);
     }
+
+    @Override
+    public void forceRefreshCache() throws Exception {
+        refreshCache();
+        setCache();
+    }
 }
