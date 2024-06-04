@@ -31,6 +31,7 @@ public class ApplicationProcess implements Closeable {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", versionFile.toString());
+        processBuilder.inheritIO();
         return new ApplicationProcess(processBuilder.start(), onProcessClose);
     }
 
