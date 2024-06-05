@@ -1,0 +1,59 @@
+on:
+  push:
+    tags:
+      - '[0-9].[0-9].[0-9]'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup gradlew
+        run: chmod +x ./gradlew
+
+      - name: distTar
+        run: ./gradlew -q distTar
+
+      - name: distZip
+        run: ./gradlew -q distZip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset Tar
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/distributions/RealmTech-launcher-${{ github.ref_name }}.tar
+          asset_name: RealmTech-launcher-${{ github.ref_name }}.tar
+          asset_content_type: application/x-tar
+
+      - name: Upload Release Asset Zip
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/distributions/RealmTech-launcher-${{ github.ref_name }}.zip
+          asset_name: RealmTech-launcher-${{ github.ref_name }}.zip
+          asset_content_type: application/zip

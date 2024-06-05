@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class RealmTechLauncher extends Application {
-    public final static String LAUNCHER_VERSION = "0.1.3";
+    public final static String LAUNCHER_VERSION = "0.1.4";
     private MainLauncherController mainLauncherController;
 
     @Override
