@@ -7,6 +7,7 @@ import ch.realmtech.launcher.ihm.WebViewListener;
 import ch.realmtech.launcher.wrk.GetVersionsReleases;
 import ch.realmtech.launcher.wrk.RealmTechData;
 import ch.realmtech.launcher.wrk.ReleasesWrk;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -115,7 +116,6 @@ public class VersionListController implements Initializable, SceneController {
         RemoteReleaseVersion selectedVersion = versionListView.getSelectionModel().getSelectedItem();
         try {
             releasesWrk.downloadVersionRelease(selectedVersion.remoteReleaseAsset.downloadUrl, selectedVersion.remoteReleaseAsset.name, onVersionDownloadSuccess(selectedVersion), onVersionDownloadFail(selectedVersion));
-            PopupHelper.builderInformation("Nouvelle version téléchargé, version: " + selectedVersion.remoteReleaseAsset.name).show();
         } catch (Exception e) {
             PopupHelper.builderError("Can not download version release", e).show();
         }
@@ -133,11 +133,11 @@ public class VersionListController implements Initializable, SceneController {
     }
 
     private Runnable onVersionDownloadSuccess(RemoteReleaseVersion releaseVersion) {
-        return () -> PopupHelper.builderInformation("Nouvelle version téléchargé " + releaseVersion.remoteReleaseAsset.name).show();
+        return () -> Platform.runLater(() -> PopupHelper.builderInformation("Nouvelle version téléchargé " + releaseVersion.remoteReleaseAsset.name).show());
     }
 
     private IntConsumer onVersionDownloadFail(RemoteReleaseVersion releaseVersion) {
-        return (statusCode) -> PopupHelper.builderError("Impossible de télécharger la version " + releaseVersion.remoteReleaseAsset.name, new Throwable("status code: " + statusCode)).show();
+        return (statusCode) -> Platform.runLater(() -> PopupHelper.builderError("Impossible de télécharger la version " + releaseVersion.remoteReleaseAsset.name, new Throwable("status code: " + statusCode)).show()) ;
     }
 
     @Override
