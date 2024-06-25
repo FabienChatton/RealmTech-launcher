@@ -1,6 +1,7 @@
 package ch.realmtech.launcher.ctrl;
 
 import ch.realmtech.launcher.beans.SceneController;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -70,5 +71,15 @@ public class NavController implements Initializable, SceneController {
     @Override
     public void onShow() {
 
+    }
+
+    @FXML
+    public void onRefreshCache(ActionEvent actionEvent) {
+        mainLauncherController.onRefreshCache(actionEvent);
+    }
+
+    @FXML
+    public void onRealmTechDataOpen(ActionEvent actionEvent) {
+        mainLauncherController.onRealmTechDataOpen(actionEvent);
     }
 }

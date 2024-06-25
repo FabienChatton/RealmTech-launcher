@@ -17,7 +17,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
@@ -149,6 +151,17 @@ public class MainLauncherController implements SceneController, Initializable {
             PopupHelper.builderInformation("Le cache à été refresh").show();
         } catch (Exception e) {
             PopupHelper.builderError("Impossible de rafraîchir le cache", e).show();
+        }
+    }
+
+    public void onRealmTechDataOpen(ActionEvent actionEvent) {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(realmTechData.getRootDataDirectory());
+        } catch (IOException e) {
+            PopupHelper.builderError("Impossible d'ouvrir RealmTechData", e);
+        } catch (Exception e) {
+            PopupHelper.builderError("Une erreur est survenue", e);
         }
     }
 }
